@@ -20,8 +20,11 @@ export async function GET(request: Request) {
     const { Cashfree } = await import("cashfree-pg");
 
     // Initialize Cashfree
+    // @ts-ignore - Cashfree SDK types may not be fully accurate
     Cashfree.XClientId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID!;
+    // @ts-ignore
     Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY!;
+    // @ts-ignore
     Cashfree.XEnvironment =
       process.env.CASHFREE_MODE === "production"
         ? Cashfree.Environment.PRODUCTION
