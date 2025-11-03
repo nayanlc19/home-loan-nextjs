@@ -32,6 +32,7 @@ export async function GET(request: Request) {
         // @ts-ignore
         : Cashfree.Environment.SANDBOX;
 
+    // @ts-ignore
     const response = await Cashfree.PGOrderFetchPayments("2023-08-01", orderId);
 
     if (response.data && response.data.length > 0) {
