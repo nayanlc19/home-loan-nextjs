@@ -367,7 +367,7 @@ export default function EarlyClosureStrategy() {
           </CardHeader>
           <CardContent className="text-amber-800">
             <ul className="space-y-2 list-disc list-inside">
-              <li><strong>The Math:</strong> If investment returns ({investmentReturns}%) > loan rate ({interestRate}%), keep the loan</li>
+              <li><strong>The Math:</strong> If investment returns ({investmentReturns}%) {'>'}  loan rate ({interestRate}%), keep the loan</li>
               <li><strong>Difference:</strong> {Math.round(difference / 100000)} L difference between two strategies over {tenureYears - loanAgeYears} years!</li>
               <li><strong>Tax Factor:</strong> Interest is tax-deductible (Section 24) - this reduces effective cost</li>
               <li><strong>Liquidity Edge:</strong> Continuing gives you accessible corpus; early closure removes flexibility</li>

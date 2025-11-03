@@ -261,7 +261,7 @@ export default function SIPVsPrepayStrategy() {
             <ul className="space-y-2 list-disc list-inside">
               <li><strong>Prepayment Advantage:</strong> Guaranteed 8.5% return (your interest rate)</li>
               <li><strong>SIP Advantage:</strong> Higher returns (12%+) if markets perform well</li>
-              <li><strong>The Math:</strong> If your SIP > Interest Rate, SIP wins long-term wealth</li>
+              <li><strong>The Math:</strong> If your SIP {'>'}  Interest Rate, SIP wins long-term wealth</li>
               <li><strong>Risk Factor:</strong> SIP has market risk, prepayment is risk-free</li>
               <li><strong>Sweet Spot:</strong> Do both! Small prepayments + SIP gives best balance</li>
               <li><strong>Tax Benefit:</strong> Loan interest deduction (₹2L) reduces cost further</li>
