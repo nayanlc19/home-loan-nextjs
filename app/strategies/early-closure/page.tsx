@@ -350,7 +350,7 @@ export default function EarlyClosureStrategy() {
               <div>
                 <h4 className="font-semibold mb-2">📈 Continuing Paying is Better When:</h4>
                 <ul className="list-disc list-inside space-y-1 ml-2">
-                  <li>Investment returns ({investmentReturns}%) > Interest rate ({interestRate}%)</li>
+                  <li>Investment returns ({investmentReturns}%) {'>'}  Interest rate ({interestRate}%)</li>
                   <li>You're comfortable with market fluctuations</li>
                   <li>You want to build wealth faster through compounding</li>
                   <li>You get tax benefits on interest deduction</li>
