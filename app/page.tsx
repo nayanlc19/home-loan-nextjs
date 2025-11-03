@@ -86,16 +86,16 @@ export default function Home() {
               optimize taxes, and take control of your financial future.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Link href="/strategies">
+              <Link href="/strategies/all">
                 <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
                   <Sparkles className="mr-2 h-5 w-5" />
-                  Explore Strategies
+                  View All 12 Strategies
                 </Button>
               </Link>
-              <Link href="/calculators">
+              <Link href="/strategies">
                 <Button size="lg" variant="outline">
                   <Calculator className="mr-2 h-5 w-5" />
-                  Try Calculators
+                  Try Strategy #1 FREE
                 </Button>
               </Link>
             </div>
