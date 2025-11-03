@@ -23,7 +23,9 @@ export async function POST(request: Request) {
     // @ts-ignore
     Cashfree.XEnvironment =
       process.env.CASHFREE_MODE === "production"
+        // @ts-ignore
         ? Cashfree.Environment.PRODUCTION
+        // @ts-ignore
         : Cashfree.Environment.SANDBOX;
 
     const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substring(7)}`;

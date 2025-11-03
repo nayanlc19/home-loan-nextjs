@@ -27,7 +27,9 @@ export async function GET(request: Request) {
     // @ts-ignore
     Cashfree.XEnvironment =
       process.env.CASHFREE_MODE === "production"
+        // @ts-ignore
         ? Cashfree.Environment.PRODUCTION
+        // @ts-ignore
         : Cashfree.Environment.SANDBOX;
 
     const response = await Cashfree.PGOrderFetchPayments("2023-08-01", orderId);
