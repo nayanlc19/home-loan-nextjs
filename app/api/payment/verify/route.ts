@@ -18,70 +18,142 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Order ID required" }, { status: 400 });
     }
 
+    const supabase = await createClient();
+
+    // Check for idempotency - prevent duplicate processing
+    const { data: existingPayment } = await supabase
+      .from("payments")
+      .select("email, order_id, amount, status")
+      .eq("order_id", orderId)
+      .single();
+
+    if (existingPayment) {
+      // Verify ownership
+      if (existingPayment.email !== session.user.email) {
+        console.warn(`User ${session.user.email} attempted to verify order ${orderId} owned by ${existingPayment.email}`);
+        return NextResponse.json(
+          { error: "Unauthorized" },
+          { status: 403 }
+        );
+      }
+
+      // Payment already processed
+      console.log(`Payment ${orderId} already processed - idempotent response`);
+      return NextResponse.json({
+        success: true,
+        status: "paid",
+        payment: {
+          orderId: existingPayment.order_id,
+          amount: existingPayment.amount,
+          status: existingPayment.status,
+        },
+      });
+    }
+
     // Verify payment with Cashfree API
-    const cashfreeUrl = process.env.CASHFREE_MODE === "production"
+    const cashfreeUrl = process.env.CASHFREE_ENV === "production"
       ? `https://api.cashfree.com/pg/orders/${orderId}`
       : `https://sandbox.cashfree.com/pg/orders/${orderId}`;
 
     const cashfreeResponse = await fetch(cashfreeUrl, {
       method: "GET",
       headers: {
-        "x-client-id": process.env.NEXT_PUBLIC_CASHFREE_APP_ID!,
-        "x-client-secret": process.env.CASHFREE_SECRET_KEY!,
+        "x-client-id": process.env.CASHFREE_CLIENT_ID!,
+        "x-client-secret": process.env.CASHFREE_CLIENT_SECRET!,
         "x-api-version": "2023-08-01",
         "Content-Type": "application/json",
       },
     });
 
     if (!cashfreeResponse.ok) {
-      throw new Error("Failed to fetch payment status from Cashfree");
+      console.error("Cashfree API error:", cashfreeResponse.status);
+      return NextResponse.json(
+        { error: "Payment verification failed" },
+        { status: 500 }
+      );
     }
 
     const paymentData = await cashfreeResponse.json();
 
+    // Verify ownership - ensure the payment belongs to the logged-in user
+    if (paymentData.customer_details?.customer_email !== session.user.email) {
+      console.warn(`User ${session.user.email} attempted to verify order ${orderId} belonging to ${paymentData.customer_details?.customer_email}`);
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 403 }
+      );
+    }
+
     if (paymentData.order_status === "PAID") {
-      // Save to Supabase database
-      const supabase = await createClient();
+      // Validate payment amount
+      const expectedAmount = parseFloat(process.env.PAYMENT_AMOUNT || "99");
+      const actualAmount = parseFloat(paymentData.order_amount || "0");
 
-      // Save to payments table
-      const paymentRecord = {
-        order_id: orderId,
-        email: session.user.email,
-        amount: paymentData.order_amount || 99,
-        status: "success",
-      };
+      if (Math.abs(actualAmount - expectedAmount) > 0.01) {
+        console.error(`Invalid payment amount: ${actualAmount}, expected: ${expectedAmount}`);
+        return NextResponse.json(
+          { error: "Invalid payment amount" },
+          { status: 400 }
+        );
+      }
 
+      // Transaction-like operations
+      const now = new Date().toISOString();
+
+      // Insert payment record first (for idempotency)
       const { error: paymentError } = await supabase
         .from("payments")
-        .insert(paymentRecord);
+        .insert({
+          order_id: orderId,
+          email: session.user.email,
+          payment_id: paymentData.cf_order_id || orderId,
+          amount: actualAmount,
+          status: "completed",
+          created_at: now,
+        });
 
       if (paymentError) {
         console.error("Payment table error:", paymentError);
-        throw new Error("Failed to save payment to database");
+        return NextResponse.json(
+          { error: "Database error" },
+          { status: 500 }
+        );
       }
 
-      // Update user_subscriptions table
+      // Update subscription status
       const { error: subscriptionError } = await supabase
         .from("user_subscriptions")
         .upsert({
           email: session.user.email,
           is_paid: true,
-          access_granted_at: new Date().toISOString(),
+          access_granted_at: now,
         }, {
           onConflict: "email",
         });
 
       if (subscriptionError) {
         console.error("Subscription table error:", subscriptionError);
-        throw new Error("Failed to update subscription status");
+
+        // Rollback payment record
+        await supabase
+          .from("payments")
+          .delete()
+          .eq("order_id", orderId);
+
+        return NextResponse.json(
+          { error: "Database error" },
+          { status: 500 }
+        );
       }
+
+      console.log(`Payment verified and subscription activated for ${session.user.email}, order: ${orderId}`);
 
       return NextResponse.json({
         success: true,
         status: "paid",
         payment: {
           orderId: orderId,
-          amount: paymentData.order_amount || 99,
+          amount: actualAmount,
           status: paymentData.order_status,
         },
       });
@@ -89,13 +161,14 @@ export async function GET(request: Request) {
 
     return NextResponse.json({
       success: false,
-      status: "failed",
-      message: "Payment not successful",
+      status: paymentData.order_status?.toLowerCase() || "unknown",
+      message: "Payment not completed",
     });
   } catch (error: any) {
     console.error("Payment verification error:", error);
+    // Don't expose internal error details
     return NextResponse.json(
-      { error: error.message || "Failed to verify payment" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
