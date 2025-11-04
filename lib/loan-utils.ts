@@ -329,6 +329,45 @@ export function formatIndianCurrency(amount: number): string {
 }
 
 /**
+ * Format number in Indian compact format (k, L, Cr)
+ * Used for chart axis labels to save space
+ * Examples:
+ * - 5000 → "5k"
+ * - 50000 → "50k"
+ * - 100000 → "1L"
+ * - 500000 → "5L"
+ * - 10000000 → "1Cr"
+ */
+export function formatIndianCompact(amount: number): string {
+  const absAmount = Math.abs(amount);
+  const sign = amount < 0 ? "-" : "";
+
+  if (absAmount >= 10000000) {
+    // >= 1 crore
+    return `${sign}${(absAmount / 10000000).toFixed(absAmount >= 100000000 ? 0 : 1)}Cr`;
+  } else if (absAmount >= 100000) {
+    // >= 1 lakh
+    return `${sign}${(absAmount / 100000).toFixed(absAmount >= 1000000 ? 0 : 1)}L`;
+  } else if (absAmount >= 1000) {
+    // >= 1 thousand
+    return `${sign}${(absAmount / 1000).toFixed(absAmount >= 10000 ? 0 : 1)}k`;
+  } else {
+    return `${sign}${absAmount.toFixed(0)}`;
+  }
+}
+
+/**
+ * Format number in Indian compact format with currency symbol
+ * Examples:
+ * - 50000 → "₹50k"
+ * - 500000 → "₹5L"
+ * - 10000000 → "₹1Cr"
+ */
+export function formatIndianCompactCurrency(amount: number): string {
+  return `₹${formatIndianCompact(amount)}`;
+}
+
+/**
  * Calculate monthly breakdown (principal vs interest) for display
  */
 export function getMonthlyBreakdown(

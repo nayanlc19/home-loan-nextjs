@@ -17,6 +17,7 @@ const bankData = [
   {
     name: "SBI",
     rate: 8.50,
+    rateLink: "https://sbi.co.in/web/interest-rates/interest-rates/loan-schemes-interest-rates",
     rating: 4.0,
     totalReviews: 1429,
     serviceQuality: "Mixed",
@@ -41,6 +42,7 @@ const bankData = [
   {
     name: "HDFC",
     rate: 8.60,
+    rateLink: "https://www.hdfc.com/home-loans/home-loan-interest-rates",
     rating: 4.0,
     totalReviews: 6443,
     serviceQuality: "Mixed",
@@ -65,6 +67,7 @@ const bankData = [
   {
     name: "ICICI",
     rate: 8.75,
+    rateLink: "https://www.icicibank.com/personal-banking/loans/home-loan/home-loan-interest-rate",
     rating: 1.6,
     totalReviews: 131,
     serviceQuality: "Poor",
@@ -91,6 +94,7 @@ const bankData = [
   {
     name: "Axis",
     rate: 8.65,
+    rateLink: "https://www.axisbank.com/retail/loans/home-loan/interest-rates",
     rating: 3.5,
     totalReviews: 450,
     serviceQuality: "Average",
@@ -114,6 +118,7 @@ const bankData = [
   {
     name: "Kotak",
     rate: 8.70,
+    rateLink: "https://www.kotak.com/en/personal-banking/loans/home-loan/interest-rates.html",
     rating: 3.8,
     totalReviews: 320,
     serviceQuality: "Good",
@@ -137,6 +142,7 @@ const bankData = [
   {
     name: "PNB",
     rate: 8.40,
+    rateLink: "https://www.pnbindia.in/en/ui/Interest-Rates.aspx",
     rating: 3.9,
     totalReviews: 890,
     serviceQuality: "Average",
@@ -237,7 +243,8 @@ export default function BanksPage() {
               <div className="text-amber-800">
                 <strong>Important:</strong> Interest rates and reviews updated January 29, 2025.
                 Actual rates may vary based on your credit score, loan amount, and employment type.
-                Always check current rates directly with banks before making decisions.
+                <br /><br />
+                <strong>📌 Keep rates current:</strong> Click "Check Latest Rate" button on each bank card to visit their official interest rate page and verify the most recent rates (updated monthly by banks).
               </div>
             </div>
           </CardContent>
@@ -298,12 +305,14 @@ export default function BanksPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="metro-tier1">Metro / Tier-1 City</SelectItem>
-                    <SelectItem value="tier2">Tier-2 City</SelectItem>
-                    <SelectItem value="tier3">Tier-3 City</SelectItem>
+                    <SelectItem value="metro-tier1">Tier-1 (Mumbai, Delhi, Bangalore, Chennai, Kolkata, Hyderabad, Pune, Ahmedabad)</SelectItem>
+                    <SelectItem value="tier2">Tier-2 (Jaipur, Lucknow, Kanpur, Nagpur, Indore, Bhopal, Visakhapatnam, etc.)</SelectItem>
+                    <SelectItem value="tier3">Tier-3 (Smaller cities, towns, rural areas)</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500">Metro cities get best rates</p>
+                <p className="text-xs text-gray-500">
+                  Tier-1 cities get best rates due to higher property demand & lower lending risk
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -462,6 +471,16 @@ export default function BanksPage() {
                     <div className="text-3xl font-bold text-blue-600">{bank.rate}%</div>
                     <div className="text-sm text-gray-600">Interest Rate</div>
                     <div className="text-xs text-gray-500 mt-1">Processing: {bank.processingFee}</div>
+                    <a
+                      href={bank.rateLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mt-2"
+                    >
+                      <Button variant="outline" size="sm" className="text-xs">
+                        Check Latest Rate →
+                      </Button>
+                    </a>
                   </div>
                 </div>
               </CardHeader>

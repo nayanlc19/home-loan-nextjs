@@ -54,6 +54,7 @@ import {
   calculateStepUpEMI,
   calculatePrepaymentImpact,
   formatIndianCurrency,
+  formatIndianCompactCurrency,
   generateAmortizationSchedule,
 } from "@/lib/loan-utils";
 import {
@@ -1035,8 +1036,12 @@ export default function CompareStrategiesPage() {
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={netBenefitChartData}>
                       <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
-                      <YAxis label={{ value: "Benefit (Lakhs)", angle: -90, position: "insideLeft" }} />
+                      <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} fontSize={12} />
+                      <YAxis
+                        label={{ value: "Net Benefit", angle: -90, position: "insideLeft" }}
+                        tickFormatter={(value) => formatIndianCompactCurrency(value * 100000)}
+                        fontSize={12}
+                      />
                       <Tooltip
                         formatter={(value: number) => `₹${value}L`}
                         labelFormatter={(label) => `Strategy: ${label}`}
