@@ -1,63 +1,92 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
+    // Check authentication
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session || !session.user) {
       return NextResponse.json(
-        { error: "Unauthorized" },
+        { error: 'Unauthorized. Please sign in.' },
         { status: 401 }
       );
     }
 
-    const { Cashfree } = await import("cashfree-pg");
+    // Validate environment variables
+    const clientId = process.env.CASHFREE_CLIENT_ID;
+    const clientSecret = process.env.CASHFREE_CLIENT_SECRET;
+    const paymentAmount = process.env.PAYMENT_AMOUNT || '99';
+    const environment = process.env.CASHFREE_ENV || 'sandbox';
 
-    // Initialize Cashfree
-    // @ts-ignore - Cashfree SDK types may not be fully accurate
-    Cashfree.XClientId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID!;
-    // @ts-ignore
-    Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY!;
-    // @ts-ignore
-    Cashfree.XEnvironment =
-      process.env.CASHFREE_MODE === "production"
-        // @ts-ignore
-        ? Cashfree.Environment.PRODUCTION
-        // @ts-ignore
-        : Cashfree.Environment.SANDBOX;
+    if (!clientId || !clientSecret) {
+      return NextResponse.json(
+        { error: 'Payment gateway configuration missing' },
+        { status: 500 }
+      );
+    }
 
-    const orderId = `ORDER_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    // Generate unique order ID
+    const randomSuffix = Math.random().toString(36).substring(2, 10);
+    const orderId = `order_${Date.now()}_${randomSuffix}`;
 
-    const request_body = {
+    // Prepare order data
+    const orderData = {
       order_id: orderId,
-      order_amount: parseFloat(process.env.PAYMENT_AMOUNT || "99"),
-      order_currency: "INR",
+      order_amount: parseFloat(paymentAmount),
+      order_currency: 'INR',
       customer_details: {
-        customer_id: session.user.id,
-        customer_email: session.user.email,
-        customer_name: session.user.name || "User",
-        customer_phone: "9999999999", // Optional: collect from user
+        customer_id: session.user.email || `user_${Date.now()}`,
+        customer_email: session.user.email || '',
+        customer_name: session.user.name || 'User',
+        customer_phone: '9999999999', // You may want to collect this from user profile
       },
       order_meta: {
-        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/payment/callback?order_id={order_id}`,
-        notify_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/webhook`,
+        return_url: `${process.env.NEXTAUTH_URL}/payment/callback?order_id=${orderId}`,
+        notify_url: `${process.env.NEXTAUTH_URL}/api/webhooks/cashfree`,
       },
     };
 
-    // @ts-ignore
-    const response = await Cashfree.PGCreateOrder("2023-08-01", request_body);
+    // Determine API URL based on environment
+    const apiUrl = environment === 'production'
+      ? 'https://api.cashfree.com/pg/orders'
+      : 'https://sandbox.cashfree.com/pg/orders';
+
+    // Make request to Cashfree API
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-client-id': clientId,
+        'x-client-secret': clientSecret,
+        'x-api-version': '2023-08-01',
+      },
+      body: JSON.stringify(orderData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Cashfree API error:', errorData);
+      return NextResponse.json(
+        { error: 'Failed to create payment order', details: errorData },
+        { status: response.status }
+      );
+    }
+
+    const data = await response.json();
 
     return NextResponse.json({
-      orderId: orderId,
-      paymentSessionId: response.data.payment_session_id,
-      orderToken: response.data.order_token,
+      success: true,
+      payment_session_id: data.payment_session_id,
+      order_id: orderId,
+      order_amount: parseFloat(paymentAmount),
     });
-  } catch (error: any) {
-    console.error("Payment order creation error:", error);
+
+  } catch (error) {
+    console.error('Error creating order:', error);
     return NextResponse.json(
-      { error: error.message || "Failed to create payment order" },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

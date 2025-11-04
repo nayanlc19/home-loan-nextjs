@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 import { calculateHomeLoanTaxBenefits, type TaxRegime } from "@/lib/tax-utils";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import StrategyAccessGuard from "@/components/strategy-access-guard";
 
 export default function LumpSumStrategy() {
   const [loanAmount, setLoanAmount] = useState(5000000);
@@ -81,6 +82,7 @@ export default function LumpSumStrategy() {
   const bestScenarioSavings = scenarios[0].saved;
 
   return (
+    <StrategyAccessGuard strategyNumber={4}>
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
@@ -330,5 +332,6 @@ export default function LumpSumStrategy() {
         </Card>
       </div>
     </div>
+    </StrategyAccessGuard>
   );
 }

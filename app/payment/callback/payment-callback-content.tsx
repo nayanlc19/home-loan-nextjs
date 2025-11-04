@@ -1,82 +1,132 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 
 export default function PaymentCallbackContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [status, setStatus] = useState<"loading" | "success" | "failed">("loading");
+  const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
+  const [message, setMessage] = useState('Verifying your payment...');
+  const [countdown, setCountdown] = useState(3);
 
   useEffect(() => {
-    const orderId = searchParams.get("order_id");
+    const verifyPayment = async () => {
+      const orderId = searchParams.get('order_id');
 
-    if (!orderId) {
-      setStatus("failed");
-      return;
-    }
+      if (!orderId) {
+        setStatus('failed');
+        setMessage('Invalid payment reference. Order ID not found.');
+        return;
+      }
 
-    // Verify payment status
-    fetch(`/api/payment/verify?orderId=${orderId}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          setStatus("success");
-        } else {
-          setStatus("failed");
+      try {
+        const response = await fetch(`/api/payment/verify?order_id=${orderId}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Payment verification failed');
         }
-      })
-      .catch(() => {
-        setStatus("failed");
-      });
-  }, [searchParams]);
+
+        if (data.success && data.payment_status === 'SUCCESS') {
+          setStatus('success');
+          setMessage('Payment successful! Redirecting to strategies...');
+
+          // Start countdown
+          const interval = setInterval(() => {
+            setCountdown((prev) => {
+              if (prev <= 1) {
+                clearInterval(interval);
+                router.push('/strategy/2');
+                return 0;
+              }
+              return prev - 1;
+            });
+          }, 1000);
+
+          return () => clearInterval(interval);
+        } else {
+          setStatus('failed');
+          setMessage(data.message || 'Payment was not successful. Please try again.');
+        }
+      } catch (error) {
+        console.error('Payment verification error:', error);
+        setStatus('failed');
+        setMessage(error instanceof Error ? error.message : 'Failed to verify payment');
+      }
+    };
+
+    verifyPayment();
+  }, [searchParams, router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
-      <Card className="w-full max-w-md p-8 text-center space-y-6">
-        {status === "loading" && (
-          <>
-            <Loader2 className="h-16 w-16 animate-spin text-blue-600 mx-auto" />
-            <h2 className="text-2xl font-bold">Verifying Payment...</h2>
-            <p className="text-gray-600">Please wait while we confirm your payment</p>
-          </>
-        )}
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted flex items-center justify-center py-12 px-4">
+      <Card className="max-w-md w-full shadow-lg">
+        <CardHeader className="text-center">
+          <div className="flex justify-center mb-4">
+            {status === 'loading' && (
+              <Loader2 className="h-16 w-16 animate-spin text-primary" />
+            )}
+            {status === 'success' && (
+              <CheckCircle2 className="h-16 w-16 text-green-600" />
+            )}
+            {status === 'failed' && (
+              <XCircle className="h-16 w-16 text-red-600" />
+            )}
+          </div>
+          <CardTitle className="text-2xl">
+            {status === 'loading' && 'Processing Payment'}
+            {status === 'success' && 'Payment Successful!'}
+            {status === 'failed' && 'Payment Failed'}
+          </CardTitle>
+          <CardDescription className="text-base mt-2">
+            {message}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {status === 'success' && (
+            <div className="text-center">
+              <p className="text-muted-foreground mb-4">
+                Redirecting in {countdown} second{countdown !== 1 ? 's' : ''}...
+              </p>
+              <Button
+                onClick={() => router.push('/strategy/2')}
+                className="w-full"
+              >
+                Go to Strategies Now
+              </Button>
+            </div>
+          )}
 
-        {status === "success" && (
-          <>
-            <CheckCircle className="h-16 w-16 text-green-600 mx-auto" />
-            <h2 className="text-2xl font-bold text-green-600">Payment Successful!</h2>
-            <p className="text-gray-600">
-              Thank you for your purchase. You now have access to all 12 strategies!
-            </p>
-            <Button
-              onClick={() => router.push("/strategies")}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600"
-            >
-              View All Strategies
-            </Button>
-          </>
-        )}
+          {status === 'failed' && (
+            <div className="space-y-3">
+              <Button
+                onClick={() => router.push('/checkout')}
+                className="w-full"
+                variant="default"
+              >
+                Try Again
+              </Button>
+              <Button
+                onClick={() => router.push('/')}
+                className="w-full"
+                variant="outline"
+              >
+                Go to Home
+              </Button>
+            </div>
+          )}
 
-        {status === "failed" && (
-          <>
-            <XCircle className="h-16 w-16 text-red-600 mx-auto" />
-            <h2 className="text-2xl font-bold text-red-600">Payment Failed</h2>
-            <p className="text-gray-600">
-              Something went wrong with your payment. Please try again.
-            </p>
-            <Button
-              onClick={() => router.push("/checkout")}
-              variant="outline"
-              className="w-full"
-            >
-              Try Again
-            </Button>
-          </>
-        )}
+          {status === 'loading' && (
+            <div className="text-center text-sm text-muted-foreground">
+              <p>Please do not close this window</p>
+              <p className="mt-1">This may take a few moments...</p>
+            </div>
+          )}
+        </CardContent>
       </Card>
     </div>
   );

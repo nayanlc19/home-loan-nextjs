@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   try {
@@ -17,44 +18,78 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Order ID required" }, { status: 400 });
     }
 
-    const { Cashfree } = await import("cashfree-pg");
+    // Verify payment with Cashfree API
+    const cashfreeUrl = process.env.CASHFREE_MODE === "production"
+      ? `https://api.cashfree.com/pg/orders/${orderId}`
+      : `https://sandbox.cashfree.com/pg/orders/${orderId}`;
 
-    // Initialize Cashfree
-    // @ts-ignore - Cashfree SDK types may not be fully accurate
-    Cashfree.XClientId = process.env.NEXT_PUBLIC_CASHFREE_APP_ID!;
-    // @ts-ignore
-    Cashfree.XClientSecret = process.env.CASHFREE_SECRET_KEY!;
-    // @ts-ignore
-    Cashfree.XEnvironment =
-      process.env.CASHFREE_MODE === "production"
-        // @ts-ignore
-        ? Cashfree.Environment.PRODUCTION
-        // @ts-ignore
-        : Cashfree.Environment.SANDBOX;
+    const cashfreeResponse = await fetch(cashfreeUrl, {
+      method: "GET",
+      headers: {
+        "x-client-id": process.env.NEXT_PUBLIC_CASHFREE_APP_ID!,
+        "x-client-secret": process.env.CASHFREE_SECRET_KEY!,
+        "x-api-version": "2023-08-01",
+        "Content-Type": "application/json",
+      },
+    });
 
-    // @ts-ignore
-    const response = await Cashfree.PGOrderFetchPayments("2023-08-01", orderId);
+    if (!cashfreeResponse.ok) {
+      throw new Error("Failed to fetch payment status from Cashfree");
+    }
 
-    if (response.data && response.data.length > 0) {
-      const payment = response.data[0];
+    const paymentData = await cashfreeResponse.json();
 
-      if (payment.payment_status === "SUCCESS") {
-        // TODO: Save to database that user has paid
-        // Update user's isPaid status
+    if (paymentData.order_status === "PAID") {
+      // Save to Supabase database
+      const supabase = await createClient();
 
-        return NextResponse.json({
-          success: true,
-          payment: {
-            orderId: orderId,
-            amount: payment.payment_amount,
-            status: payment.payment_status,
-          },
-        });
+      // Save to payments table
+      const paymentRecord = {
+        order_id: orderId,
+        email: session.user.email,
+        amount: paymentData.order_amount || 99,
+        status: "success",
+      };
+
+      const { error: paymentError } = await supabase
+        .from("payments")
+        .insert(paymentRecord);
+
+      if (paymentError) {
+        console.error("Payment table error:", paymentError);
+        throw new Error("Failed to save payment to database");
       }
+
+      // Update user_subscriptions table
+      const { error: subscriptionError } = await supabase
+        .from("user_subscriptions")
+        .upsert({
+          email: session.user.email,
+          is_paid: true,
+          access_granted_at: new Date().toISOString(),
+        }, {
+          onConflict: "email",
+        });
+
+      if (subscriptionError) {
+        console.error("Subscription table error:", subscriptionError);
+        throw new Error("Failed to update subscription status");
+      }
+
+      return NextResponse.json({
+        success: true,
+        status: "paid",
+        payment: {
+          orderId: orderId,
+          amount: paymentData.order_amount || 99,
+          status: paymentData.order_status,
+        },
+      });
     }
 
     return NextResponse.json({
       success: false,
+      status: "failed",
       message: "Payment not successful",
     });
   } catch (error: any) {
