@@ -1,10 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { Star, TrendingUp, TrendingDown, AlertCircle, CheckCircle2, XCircle, Building2, Users } from "lucide-react";
+import { Star, TrendingUp, TrendingDown, AlertCircle, CheckCircle2, XCircle, Building2, Users, Target, Percent } from "lucide-react";
+import { calculatePersonalizedRate, type UserProfile, type CreditScoreBand, type Gender, type EmploymentType, type Location } from "@/lib/rate-utils";
+import { calculateEMI, calculateTotalInterest, formatIndianCurrency } from "@/lib/loan-utils";
 
 const bankData = [
   {
@@ -169,6 +176,41 @@ const getServiceBadge = (quality: string) => {
 };
 
 export default function BanksPage() {
+  // State for personalized rate calculator
+  const [creditScore, setCreditScore] = useState<CreditScoreBand>("750+");
+  const [age, setAge] = useState(35);
+  const [gender, setGender] = useState<Gender>("male");
+  const [employment, setEmployment] = useState<EmploymentType>("salaried-other");
+  const [loanAmount, setLoanAmount] = useState(5000000);
+  const [location, setLocation] = useState<Location>("metro-tier1");
+  const [tenure, setTenure] = useState(20);
+
+  const userProfile: UserProfile = {
+    creditScore,
+    age,
+    gender,
+    employment,
+    loanAmount,
+    location,
+  };
+
+  // Calculate personalized rates for each bank
+  const personalizedRates = bankData.map(bank => {
+    const result = calculatePersonalizedRate(bank.rate, userProfile);
+    const emi = calculateEMI(loanAmount, result.adjustedRate, tenure);
+    const totalInterest = calculateTotalInterest(loanAmount, result.adjustedRate, tenure);
+    const savingsVsHighest = calculateTotalInterest(loanAmount, 8.75, tenure) - totalInterest;
+
+    return {
+      ...bank,
+      personalizedRate: result.adjustedRate,
+      adjustment: result.totalAdjustment,
+      emi,
+      totalInterest,
+      savingsVsHighest,
+    };
+  }).sort((a, b) => a.personalizedRate - b.personalizedRate);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -179,7 +221,7 @@ export default function BanksPage() {
               Bank Reviews & Comparison
             </h1>
             <p className="text-gray-600 mt-2">
-              Real customer reviews and ratings for 6 major banks
+              Find YOUR best rate based on your profile + Real customer reviews
             </p>
           </div>
           <Link href="/">
@@ -197,6 +239,187 @@ export default function BanksPage() {
                 Actual rates may vary based on your credit score, loan amount, and employment type.
                 Always check current rates directly with banks before making decisions.
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Personalized Rate Calculator Section */}
+        <Card className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <Target className="h-6 w-6 text-blue-600" />
+              <div>
+                <CardTitle className="text-2xl">Find YOUR Best Rate</CardTitle>
+                <CardDescription>
+                  Get personalized rates based on your unique profile (6 factors)
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Profile Inputs */}
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="creditScore">Credit Score</Label>
+                <Select value={creditScore} onValueChange={(val) => setCreditScore(val as CreditScoreBand)}>
+                  <SelectTrigger id="creditScore">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="750+">750+ (Excellent)</SelectItem>
+                    <SelectItem value="700-749">700-749 (Good)</SelectItem>
+                    <SelectItem value="650-699">650-699 (Fair)</SelectItem>
+                    <SelectItem value="<650">&lt;650 (Poor)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500">Higher = Better rate</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="employment">Employment Type</Label>
+                <Select value={employment} onValueChange={(val) => setEmployment(val as EmploymentType)}>
+                  <SelectTrigger id="employment">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="salaried-govt">Government Employee</SelectItem>
+                    <SelectItem value="salaried-mnc">MNC Employee</SelectItem>
+                    <SelectItem value="salaried-other">Private Sector</SelectItem>
+                    <SelectItem value="self-employed">Self-Employed</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500">Govt/MNC get best rates</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="location">Property Location</Label>
+                <Select value={location} onValueChange={(val) => setLocation(val as Location)}>
+                  <SelectTrigger id="location">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="metro-tier1">Metro / Tier-1 City</SelectItem>
+                    <SelectItem value="tier2">Tier-2 City</SelectItem>
+                    <SelectItem value="tier3">Tier-3 City</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500">Metro cities get best rates</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="age">Age: {age} years</Label>
+                <Slider
+                  id="age"
+                  min={23}
+                  max={62}
+                  step={1}
+                  value={[age]}
+                  onValueChange={(val) => setAge(val[0])}
+                  className="mt-2"
+                />
+                <p className="text-xs text-gray-500">25-35 years get best rates</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="loanAmount">Loan Amount (₹)</Label>
+                <Input
+                  id="loanAmount"
+                  type="number"
+                  value={loanAmount}
+                  onChange={(e) => setLoanAmount(Number(e.target.value))}
+                  step={100000}
+                  min={100000}
+                />
+                <p className="text-xs text-gray-500">₹{(loanAmount / 100000).toFixed(1)}L - Higher loans get better rates</p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="gender">Gender</Label>
+                <Select value={gender} onValueChange={(val) => setGender(val as Gender)}>
+                  <SelectTrigger id="gender">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female (0.05% off)</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-gray-500">Women get 0.05% concession</p>
+              </div>
+            </div>
+
+            {/* Results Table */}
+            <div className="bg-white rounded-lg p-4 border-2 border-blue-300">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <Percent className="h-5 w-5 text-blue-600" />
+                Banks Ranked for YOUR Profile
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="text-left p-2">Rank</th>
+                      <th className="text-left p-2">Bank</th>
+                      <th className="text-right p-2">Base Rate</th>
+                      <th className="text-right p-2">YOUR Rate</th>
+                      <th className="text-right p-2">Adjustment</th>
+                      <th className="text-right p-2">Monthly EMI</th>
+                      <th className="text-right p-2">You Save (20y)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {personalizedRates.map((bank, index) => (
+                      <tr key={bank.name} className={`border-b ${index === 0 ? 'bg-green-50' : ''}`}>
+                        <td className="p-2">
+                          {index === 0 ? (
+                            <Badge className="bg-green-600">🏆 Best</Badge>
+                          ) : (
+                            <span className="text-gray-600">#{index + 1}</span>
+                          )}
+                        </td>
+                        <td className="p-2 font-semibold">{bank.name}</td>
+                        <td className="text-right p-2 text-gray-600">{bank.rate.toFixed(2)}%</td>
+                        <td className="text-right p-2">
+                          <span className="font-bold text-blue-600">{bank.personalizedRate.toFixed(2)}%</span>
+                        </td>
+                        <td className="text-right p-2">
+                          <span className={bank.adjustment < 0 ? 'text-green-600' : 'text-red-600'}>
+                            {bank.adjustment > 0 ? '+' : ''}{bank.adjustment.toFixed(2)}%
+                          </span>
+                        </td>
+                        <td className="text-right p-2 font-semibold">
+                          {formatIndianCurrency(bank.emi)}
+                        </td>
+                        <td className="text-right p-2">
+                          <span className="font-bold text-green-600">
+                            {formatIndianCurrency(bank.savingsVsHighest)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-xs text-gray-500 mt-3">
+                * Savings shown vs highest rate (8.75%) for ₹{(loanAmount/100000).toFixed(1)}L over {tenure} years
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between bg-blue-100 p-4 rounded-lg">
+              <div>
+                <p className="text-sm text-blue-800">
+                  <strong>Your Best Bank:</strong> {personalizedRates[0].name} at {personalizedRates[0].personalizedRate.toFixed(2)}%
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Save {formatIndianCurrency(personalizedRates[0].savingsVsHighest)} vs highest rate
+                </p>
+              </div>
+              <Link href="/calculators/personalized-rate">
+                <Button variant="default">
+                  Detailed Analysis →
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>
