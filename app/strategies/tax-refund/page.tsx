@@ -9,6 +9,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Calculator, TrendingDown, Clock, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 
 export default function TaxRefundStrategy() {
   const [loanAmount, setLoanAmount] = useState(5000000);
@@ -223,7 +224,10 @@ export default function TaxRefundStrategy() {
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="year" label={{ value: 'Year', position: 'insideBottom', offset: -5 }} />
-                    <YAxis label={{ value: 'Amount (₹)', angle: -90, position: 'insideLeft' }} />
+                    <YAxis
+                      label={{ value: 'Amount', angle: -90, position: 'insideLeft' }}
+                      tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                    />
                     <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
                     <Legend />
                     <Area
@@ -243,7 +247,10 @@ export default function TaxRefundStrategy() {
                   <BarChart data={yearlyData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="year" label={{ value: 'Year', position: 'insideBottom', offset: -5 }} />
-                    <YAxis label={{ value: 'Amount (₹)', angle: -90, position: 'insideLeft' }} />
+                    <YAxis
+                      label={{ value: 'Amount', angle: -90, position: 'insideLeft' }}
+                      tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                    />
                     <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
                     <Legend />
                     <Bar dataKey="saved" fill="#10b981" name="Total Savings" />

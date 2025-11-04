@@ -8,6 +8,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Calculator, TrendingUp } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 
 export default function StepUpEMIStrategy() {
   const [loanAmount, setLoanAmount] = useState(5000000);
@@ -216,7 +217,10 @@ export default function StepUpEMIStrategy() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" label={{ value: 'Year', position: 'insideBottom', offset: -5 }} />
-                <YAxis label={{ value: 'Loan Remaining (₹)', angle: -90, position: 'insideLeft' }} />
+                <YAxis
+                  label={{ value: 'Loan Remaining', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                />
                 <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
                 <Legend />
                 <Area

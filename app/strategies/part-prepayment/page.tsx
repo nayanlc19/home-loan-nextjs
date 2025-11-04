@@ -9,6 +9,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Calculator, Scale } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 
 export default function PartPrepaymentStrategy() {
   const [loanAmount, setLoanAmount] = useState(5000000);
@@ -232,7 +233,10 @@ export default function PartPrepaymentStrategy() {
                   <BarChart data={comparisonData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="scenario" />
-                    <YAxis label={{ value: 'Total Interest (₹)', angle: -90, position: 'insideLeft' }} />
+                    <YAxis
+                      label={{ value: 'Total Interest', angle: -90, position: 'insideLeft' }}
+                      tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                    />
                     <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
                     <Bar dataKey="interest" fill="#8b5cf6" />
                   </BarChart>

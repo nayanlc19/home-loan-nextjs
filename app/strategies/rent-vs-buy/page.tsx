@@ -8,6 +8,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { Calculator, Home } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 
 export default function RentVsBuyStrategy() {
   const [propertyPrice, setPropertyPrice] = useState(10000000);
@@ -254,7 +255,10 @@ export default function RentVsBuyStrategy() {
               <LineChart data={comparisonData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" label={{ value: 'Year', position: 'insideBottom', offset: -5 }} />
-                <YAxis label={{ value: 'Net Worth (₹)', angle: -90, position: 'insideLeft' }} />
+                <YAxis
+                  label={{ value: 'Net Worth', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                />
                 <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
                 <Legend />
                 <Line

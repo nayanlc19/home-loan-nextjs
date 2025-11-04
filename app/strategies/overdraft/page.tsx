@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Calculator, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 
 export default function OverdraftStrategy() {
   const [loanAmount, setLoanAmount] = useState(5000000);
@@ -209,8 +210,17 @@ export default function OverdraftStrategy() {
               <BarChart data={scenarios}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" />
-                <YAxis yAxisId="left" label={{ value: 'Total Interest (₹)', angle: -90, position: 'insideLeft' }} />
-                <YAxis yAxisId="right" orientation="right" label={{ value: 'Savings (₹)', angle: 90, position: 'insideRight' }} />
+                <YAxis
+                  yAxisId="left"
+                  label={{ value: 'Total Interest', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  label={{ value: 'Savings', angle: 90, position: 'insideRight' }}
+                  tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                />
                 <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
                 <Legend />
                 <Bar yAxisId="left" dataKey="interest" fill="#ef4444" name="Total Interest" />

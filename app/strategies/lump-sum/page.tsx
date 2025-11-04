@@ -9,6 +9,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Calculator, Coins } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 
 export default function LumpSumStrategy() {
   const [loanAmount, setLoanAmount] = useState(5000000);
@@ -165,7 +166,12 @@ export default function LumpSumStrategy() {
               <BarChart data={scenarios}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" />
-                <YAxis yAxisId="left" orientation="left" label={{ value: 'Interest (₹)', angle: -90, position: 'insideLeft' }} />
+                <YAxis
+                  yAxisId="left"
+                  orientation="left"
+                  label={{ value: 'Interest', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                />
                 <YAxis yAxisId="right" orientation="right" label={{ value: 'Tenure (Years)', angle: 90, position: 'insideRight' }} />
                 <Tooltip formatter={(value, name) => {
                   if (name === 'Total Interest') return `₹${Number(value).toLocaleString('en-IN')}`;

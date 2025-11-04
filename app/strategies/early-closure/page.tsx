@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Calculator, TrendingDown } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 
 export default function EarlyClosureStrategy() {
   const [loanAmount, setLoanAmount] = useState(5000000);
@@ -263,7 +264,10 @@ export default function EarlyClosureStrategy() {
               <BarChart data={yearData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" />
-                <YAxis label={{ value: 'Amount (₹)', angle: -90, position: 'insideLeft' }} />
+                <YAxis
+                  label={{ value: 'Amount', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                />
                 <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
                 <Legend />
                 <Bar dataKey="investmentEarlyClose" fill="#10b981" name="Investment (Early Close)" />

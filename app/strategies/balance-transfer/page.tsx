@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { Calculator, TrendingDown } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 
 export default function BalanceTransferStrategy() {
   const [currentLoanAmount, setCurrentLoanAmount] = useState(3000000);
@@ -253,7 +254,10 @@ export default function BalanceTransferStrategy() {
               <BarChart data={yearData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" />
-                <YAxis label={{ value: 'Loan Balance (₹)', angle: -90, position: 'insideLeft' }} />
+                <YAxis
+                  label={{ value: 'Loan Balance', angle: -90, position: 'insideLeft' }}
+                  tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                />
                 <Tooltip formatter={(value) => `₹${Number(value).toLocaleString('en-IN')}`} />
                 <Legend />
                 <Bar dataKey="currentLoanRemaining" fill="#ef4444" name="Current Loan" />

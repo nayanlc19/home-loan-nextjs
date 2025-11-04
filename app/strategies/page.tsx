@@ -24,6 +24,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { Lock, TrendingDown, Calculator, IndianRupee } from "lucide-react";
+import { formatIndianCompactCurrency } from "@/lib/loan-utils";
 
 interface LoanCalculation {
   loanAmount: number;
@@ -301,7 +302,10 @@ export default function StrategiesPage() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" label={{ value: "Months", position: "insideBottom", offset: -5 }} />
-                  <YAxis label={{ value: "Principal Paid (₹)", angle: -90, position: "insideLeft" }} />
+                  <YAxis
+                    label={{ value: "Principal Paid", angle: -90, position: "insideLeft" }}
+                    tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                  />
                   <Tooltip formatter={(value: number) => `₹${value.toLocaleString("en-IN")}`} />
                   <Legend />
                   <Area
@@ -341,7 +345,10 @@ export default function StrategiesPage() {
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="type" />
-                  <YAxis label={{ value: "Total Interest (₹)", angle: -90, position: "insideLeft" }} />
+                  <YAxis
+                    label={{ value: "Total Interest", angle: -90, position: "insideLeft" }}
+                    tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                  />
                   <Tooltip formatter={(value: number) => `₹${value.toLocaleString("en-IN")}`} />
                   <Bar dataKey="interest" fill="#8b5cf6" />
                 </BarChart>
@@ -357,7 +364,10 @@ export default function StrategiesPage() {
                 <LineChart data={calculation.comparisonData}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" label={{ value: "Months", position: "insideBottom", offset: -5 }} />
-                  <YAxis label={{ value: "Savings (₹)", angle: -90, position: "insideLeft" }} />
+                  <YAxis
+                    label={{ value: "Savings", angle: -90, position: "insideLeft" }}
+                    tickFormatter={(value) => formatIndianCompactCurrency(value)}
+                  />
                   <Tooltip formatter={(value: number) => `₹${value.toLocaleString("en-IN")}`} />
                   <Legend />
                   <Line
