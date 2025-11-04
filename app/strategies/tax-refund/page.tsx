@@ -10,12 +10,17 @@ import { Calculator, TrendingDown, Clock, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatIndianCompactCurrency } from "@/lib/loan-utils";
+import { calculateHomeLoanTaxBenefits, type TaxRegime } from "@/lib/tax-utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function TaxRefundStrategy() {
   const [loanAmount, setLoanAmount] = useState(5000000);
   const [interestRate, setInterestRate] = useState(8.5);
   const [tenureYears, setTenureYears] = useState(20);
   const [annualRefund, setAnnualRefund] = useState(50000);
+  const [taxableIncome, setTaxableIncome] = useState(1200000);
+  const [regime, setRegime] = useState<TaxRegime>("old");
 
   // Calculate results
   const monthlyRate = interestRate / 100 / 12;
@@ -69,6 +74,28 @@ export default function TaxRefundStrategy() {
 
   const tenureSaved = totalMonths - monthsWithRefund;
   const moneySaved = totalInterestStandard - totalInterestWithRefund;
+
+  // Calculate year 1 principal and interest for tax benefits
+  const monthlyRateCalc = interestRate / 100 / 12;
+  let balance = loanAmount;
+  let year1Principal = 0;
+  let year1Interest = 0;
+
+  for (let month = 1; month <= 12; month++) {
+    const interest = balance * monthlyRateCalc;
+    const principal = monthlyEMI - interest;
+    year1Principal += principal;
+    year1Interest += interest;
+    balance -= principal;
+  }
+
+  const taxBenefits = calculateHomeLoanTaxBenefits(
+    year1Principal,
+    year1Interest,
+    taxableIncome,
+    "self-occupied",
+    regime
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 md:p-8">
@@ -141,6 +168,44 @@ export default function TaxRefundStrategy() {
                 />
               </div>
             </div>
+
+            {/* Tax Calculation Inputs */}
+            <div className="mt-6 pt-6 border-t">
+              <h3 className="text-lg font-semibold mb-4 text-gray-700">Tax Benefits (Year 1)</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="taxableIncome">Annual Taxable Income (₹)</Label>
+                  <Input
+                    id="taxableIncome"
+                    type="number"
+                    value={taxableIncome}
+                    onChange={(e) => setTaxableIncome(Number(e.target.value))}
+                  />
+                  <p className="text-xs text-gray-500">
+                    ₹{taxableIncome.toLocaleString("en-IN")}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Tax Regime</Label>
+                  <RadioGroup value={regime} onValueChange={(value) => setRegime(value as TaxRegime)}>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="old" id="regime-old" />
+                        <Label htmlFor="regime-old" className="font-normal cursor-pointer">Old Regime</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="new" id="regime-new" />
+                        <Label htmlFor="regime-new" className="font-normal cursor-pointer">New Regime</Label>
+                      </div>
+                    </div>
+                  </RadioGroup>
+                  <p className="text-xs text-gray-500">
+                    {regime === "old" ? "With deductions" : "No deductions"}
+                  </p>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -200,6 +265,45 @@ export default function TaxRefundStrategy() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Tax Benefits Card */}
+        <Card className="bg-gradient-to-r from-green-50 to-emerald-50">
+          <CardHeader>
+            <CardTitle>💰 Total Savings Breakdown</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span>Interest Saved:</span>
+                <span className="font-semibold">₹{moneySaved.toLocaleString("en-IN")}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Tax Benefits (Annual):</span>
+                <span className="font-semibold text-blue-600">
+                  + ₹{taxBenefits.totalBenefit.toLocaleString("en-IN")}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-sm text-gray-600">
+                <span className="ml-4">└─ Section 80C:</span>
+                <span>₹{taxBenefits.section80c.toLocaleString("en-IN")}</span>
+              </div>
+
+              <div className="flex justify-between text-sm text-gray-600">
+                <span className="ml-4">└─ Section 24(b):</span>
+                <span>₹{taxBenefits.section24b.toLocaleString("en-IN")}</span>
+              </div>
+
+              <div className="border-t pt-3 flex justify-between">
+                <span className="text-xl font-bold">Net Benefit:</span>
+                <span className="text-xl font-bold text-green-600">
+                  ₹{(moneySaved + taxBenefits.totalBenefit).toLocaleString("en-IN")}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Charts */}
         <Card>

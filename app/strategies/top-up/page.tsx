@@ -9,6 +9,8 @@ import { Calculator, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatIndianCompactCurrency } from "@/lib/loan-utils";
+import { calculateHomeLoanTaxBenefits, type TaxRegime } from "@/lib/tax-utils";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function TopUpStrategy() {
   const [originalLoan, setOriginalLoan] = useState(5000000);
@@ -16,6 +18,8 @@ export default function TopUpStrategy() {
   const [tenureYears, setTenureYears] = useState(20);
   const [topUpAmount, setTopUpAmount] = useState(1500000);
   const [loanAgeYears, setLoanAgeYears] = useState(3);
+  const [taxableIncome, setTaxableIncome] = useState(1200000);
+  const [regime, setRegime] = useState<TaxRegime>("old");
 
   const monthlyRate = interestRate / 100 / 12;
   const totalMonths = tenureYears * 12;
@@ -102,6 +106,27 @@ export default function TopUpStrategy() {
 
   const addedInterest = totalInterestWithTopUpFull - totalInterestWithoutTopUpFull;
 
+  // Calculate year 1 principal and interest for tax benefits
+  let balance = newLoanAmount;
+  let year1Principal = 0;
+  let year1Interest = 0;
+
+  for (let month = 1; month <= 12; month++) {
+    const interest = balance * monthlyRate;
+    const principal = newEMI - interest;
+    year1Principal += principal;
+    year1Interest += interest;
+    balance -= principal;
+  }
+
+  const taxBenefits = calculateHomeLoanTaxBenefits(
+    year1Principal,
+    year1Interest,
+    taxableIncome,
+    "self-occupied",
+    regime
+  );
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -175,6 +200,44 @@ export default function TopUpStrategy() {
                 className="mt-2 max-w-xs"
               />
               <p className="text-xs text-gray-500 mt-2">Usually up to 50% of current property value</p>
+            </div>
+
+            {/* Tax Calculation Inputs */}
+            <div className="mt-6 pt-6 border-t">
+              <h3 className="text-lg font-semibold mb-4 text-gray-700">Tax Benefits (Year 1)</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="taxableIncome">Annual Taxable Income (₹)</Label>
+                  <Input
+                    id="taxableIncome"
+                    type="number"
+                    value={taxableIncome}
+                    onChange={(e) => setTaxableIncome(Number(e.target.value))}
+                  />
+                  <p className="text-xs text-gray-500">
+                    ₹{taxableIncome.toLocaleString("en-IN")}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Tax Regime</Label>
+                  <RadioGroup value={regime} onValueChange={(value) => setRegime(value as TaxRegime)}>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="old" id="regime-old" />
+                        <Label htmlFor="regime-old" className="font-normal cursor-pointer">Old Regime</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="new" id="regime-new" />
+                        <Label htmlFor="regime-new" className="font-normal cursor-pointer">New Regime</Label>
+                      </div>
+                    </div>
+                  </RadioGroup>
+                  <p className="text-xs text-gray-500">
+                    {regime === "old" ? "With deductions" : "No deductions"}
+                  </p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -267,7 +330,7 @@ export default function TopUpStrategy() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="pb-2">
               <CardDescription className="text-sm">Remaining Balance Today</CardDescription>
@@ -292,6 +355,32 @@ export default function TopUpStrategy() {
             </CardHeader>
             <CardContent>
               <p className="text-xl font-bold">₹{Math.round(newLoanAmount).toLocaleString('en-IN')}</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-green-50 to-emerald-50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">💰 Tax Benefits</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span>Section 80C:</span>
+                  <span className="font-semibold">₹{taxBenefits.section80c.toLocaleString("en-IN")}</span>
+                </div>
+
+                <div className="flex justify-between text-xs">
+                  <span>Section 24(b):</span>
+                  <span className="font-semibold">₹{taxBenefits.section24b.toLocaleString("en-IN")}</span>
+                </div>
+
+                <div className="border-t pt-1 flex justify-between">
+                  <span className="text-xs font-bold">Annual Benefit:</span>
+                  <span className="text-xs font-bold text-green-600">
+                    ₹{taxBenefits.totalBenefit.toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

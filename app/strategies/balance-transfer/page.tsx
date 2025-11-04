@@ -9,6 +9,8 @@ import { Calculator, TrendingDown } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { formatIndianCompactCurrency } from "@/lib/loan-utils";
+import { calculateHomeLoanTaxBenefits, type TaxRegime } from "@/lib/tax-utils";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function BalanceTransferStrategy() {
   const [currentLoanAmount, setCurrentLoanAmount] = useState(3000000);
@@ -16,6 +18,8 @@ export default function BalanceTransferStrategy() {
   const [remainingTenure, setRemainingTenure] = useState(15);
   const [newRate, setNewRate] = useState(7.5);
   const [transferCost, setTransferCost] = useState(50000);
+  const [taxableIncome, setTaxableIncome] = useState(1200000);
+  const [regime, setRegime] = useState<TaxRegime>("old");
 
   const monthlyRateCurrent = currentRate / 100 / 12;
   const monthlyRateNew = newRate / 100 / 12;
@@ -88,6 +92,27 @@ export default function BalanceTransferStrategy() {
       transferLoanRemaining: Math.max(0, Math.round(remNew))
     });
   }
+
+  // Calculate year 1 principal and interest for tax benefits
+  let balance = transferAmount;
+  let year1Principal = 0;
+  let year1Interest = 0;
+
+  for (let month = 1; month <= 12; month++) {
+    const interest = balance * monthlyRateNew;
+    const principal = newEMI - interest;
+    year1Principal += principal;
+    year1Interest += interest;
+    balance -= principal;
+  }
+
+  const taxBenefits = calculateHomeLoanTaxBenefits(
+    year1Principal,
+    year1Interest,
+    taxableIncome,
+    "self-occupied",
+    regime
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 md:p-8">
@@ -162,6 +187,44 @@ export default function BalanceTransferStrategy() {
               />
               <p className="text-xs text-gray-500 mt-2">Typical: ₹40,000 - ₹100,000</p>
             </div>
+
+            {/* Tax Calculation Inputs */}
+            <div className="mt-6 pt-6 border-t">
+              <h3 className="text-lg font-semibold mb-4 text-gray-700">Tax Benefits (Year 1)</h3>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="taxableIncome">Annual Taxable Income (₹)</Label>
+                  <Input
+                    id="taxableIncome"
+                    type="number"
+                    value={taxableIncome}
+                    onChange={(e) => setTaxableIncome(Number(e.target.value))}
+                  />
+                  <p className="text-xs text-gray-500">
+                    ₹{taxableIncome.toLocaleString("en-IN")}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Tax Regime</Label>
+                  <RadioGroup value={regime} onValueChange={(value) => setRegime(value as TaxRegime)}>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="old" id="regime-old" />
+                        <Label htmlFor="regime-old" className="font-normal cursor-pointer">Old Regime</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="new" id="regime-new" />
+                        <Label htmlFor="regime-new" className="font-normal cursor-pointer">New Regime</Label>
+                      </div>
+                    </div>
+                  </RadioGroup>
+                  <p className="text-xs text-gray-500">
+                    {regime === "old" ? "With deductions" : "No deductions"}
+                  </p>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -215,7 +278,7 @@ export default function BalanceTransferStrategy() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="pb-3">
               <CardDescription>Total Interest - Current</CardDescription>
@@ -235,6 +298,44 @@ export default function BalanceTransferStrategy() {
               <p className="text-2xl font-bold text-green-700">
                 ₹{Math.round(totalCostNew).toLocaleString('en-IN')}
               </p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-green-50 to-emerald-50">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">💰 Total Savings Breakdown</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Interest Saved:</span>
+                  <span className="font-semibold">₹{Math.round(netSavings).toLocaleString("en-IN")}</span>
+                </div>
+
+                <div className="flex justify-between text-sm">
+                  <span>Tax Benefits (Annual):</span>
+                  <span className="font-semibold text-blue-600">
+                    + ₹{taxBenefits.totalBenefit.toLocaleString("en-IN")}
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-xs text-gray-600">
+                  <span className="ml-2">└─ Section 80C:</span>
+                  <span>₹{taxBenefits.section80c.toLocaleString("en-IN")}</span>
+                </div>
+
+                <div className="flex justify-between text-xs text-gray-600">
+                  <span className="ml-2">└─ Section 24(b):</span>
+                  <span>₹{taxBenefits.section24b.toLocaleString("en-IN")}</span>
+                </div>
+
+                <div className="border-t pt-2 flex justify-between">
+                  <span className="font-bold">Net Benefit:</span>
+                  <span className="font-bold text-green-600">
+                    ₹{(Math.round(netSavings) + taxBenefits.totalBenefit).toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

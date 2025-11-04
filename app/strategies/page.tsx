@@ -378,8 +378,8 @@ export default function StrategiesPage() {
               ₹{Math.round(taxBenefits.totalBenefit).toLocaleString("en-IN")}
             </p>
             <div className="text-xs text-gray-600 mt-2 space-y-1">
-              <p>80C: ₹{Math.round(taxBenefits.section80C).toLocaleString("en-IN")}</p>
-              <p>24B: ₹{Math.round(taxBenefits.section24B).toLocaleString("en-IN")}</p>
+              <p>80C: ₹{Math.round(taxBenefits.section80c).toLocaleString("en-IN")}</p>
+              <p>24B: ₹{Math.round(taxBenefits.section24b).toLocaleString("en-IN")}</p>
             </div>
           </Card>
 
