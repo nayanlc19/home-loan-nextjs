@@ -49,14 +49,17 @@ export default function Home() {
             </span>
           </div>
           <div className="flex items-center space-x-4">
-            <Link href="/strategies">
+            <Link href="/strategies/all">
               <Button variant="ghost">Strategies</Button>
             </Link>
-            <Link href="/calculators">
-              <Button variant="ghost">Calculators</Button>
-            </Link>
             <Link href="/banks">
-              <Button variant="ghost">Compare Banks</Button>
+              <Button variant="ghost">Banks</Button>
+            </Link>
+            <Link href="/guides/tips">
+              <Button variant="ghost">Tips & Tricks</Button>
+            </Link>
+            <Link href="/guides/hidden-costs">
+              <Button variant="ghost">Hidden Costs</Button>
             </Link>
             {session?.user && (
               <Badge variant="secondary" className="px-4 py-2">
@@ -157,6 +160,39 @@ export default function Home() {
             </p>
           </Card>
         </div>
+      </section>
+
+      {/* Emotional Welcome - "Pour Your Heart Out" */}
+      <section className="container mx-auto px-4 py-16">
+        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+          <CardContent className="p-8 md:p-12">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="text-4xl">💚</div>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold text-green-900 mb-4">
+                  From One Home Buyer to Another
+                </h2>
+                <div className="space-y-4 text-green-800 text-lg leading-relaxed">
+                  <p>
+                    I remember my first home loan application. The forms, the documents, the scary numbers...
+                    My hands were literally shaking when I signed the loan agreement. ₹50 lakhs over 20 years?
+                    That's ₹6 lakhs a year! Would I even have a job for 20 years?
+                  </p>
+                  <p>
+                    If you're feeling scared right now - <strong>you're NORMAL</strong>. A home loan is probably
+                    the biggest financial commitment you'll ever make. But here's what I learned:
+                    <strong> knowledge removes fear</strong>. Understanding how it all works makes you feel in control.
+                  </p>
+                  <p>
+                    These strategies are everything I wish someone had told me before I started.
+                    Read them, save them, come back to them whenever you need reassurance.
+                    <strong> You've got this! 🤗</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </section>
 
       {/* Features Section */}
