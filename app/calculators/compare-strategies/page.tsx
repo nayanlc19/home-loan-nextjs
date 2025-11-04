@@ -1118,10 +1118,10 @@ export default function CompareStrategiesPage() {
                         <h3 className="font-semibold">Best for Maximum Savings</h3>
                       </div>
                       <p className="text-2xl font-bold text-green-700">
-                        {recommendations.bestSavings.name}
+                        {recommendations.bestSavings?.name ?? "Select strategies"}
                       </p>
                       <p className="text-sm text-gray-600 mt-1">
-                        Save {formatIndianCurrency(recommendations.bestSavings.netBenefit)}
+                        Save {formatIndianCurrency(recommendations.bestSavings?.netBenefit ?? 0)}
                       </p>
                     </div>
 
@@ -1131,10 +1131,10 @@ export default function CompareStrategiesPage() {
                         <h3 className="font-semibold">Easiest to Implement</h3>
                       </div>
                       <p className="text-2xl font-bold text-blue-700">
-                        {recommendations.easiest.name}
+                        {recommendations.easiest?.name ?? "Select strategies"}
                       </p>
                       <p className="text-sm text-gray-600 mt-1">
-                        {recommendations.easiest.difficulty} difficulty
+                        {recommendations.easiest?.difficulty ?? "N/A"} difficulty
                       </p>
                     </div>
 
@@ -1144,10 +1144,10 @@ export default function CompareStrategiesPage() {
                         <h3 className="font-semibold">Best for Flexibility</h3>
                       </div>
                       <p className="text-2xl font-bold text-purple-700">
-                        {recommendations.mostFlexible.name}
+                        {recommendations.mostFlexible?.name ?? "Select strategies"}
                       </p>
                       <p className="text-sm text-gray-600 mt-1">
-                        {recommendations.mostFlexible.flexibility} flexibility
+                        {recommendations.mostFlexible?.flexibility ?? "N/A"} flexibility
                       </p>
                     </div>
                   </div>
