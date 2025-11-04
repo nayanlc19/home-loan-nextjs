@@ -1,9 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { rateLimit, getClientIp, RateLimitPresets } from '@/lib/rate-limiter';
 
 export async function POST(req: NextRequest) {
   try {
+    // Rate limiting - prevent spam order creation
+    const clientIp = getClientIp(req);
+    const rateLimitResult = rateLimit(clientIp, RateLimitPresets.PAYMENT_CREATE);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Too many requests',
+          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000),
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': new Date(rateLimitResult.resetTime).toISOString(),
+          },
+        }
+      );
+    }
+
     // Check authentication
     const session = await getServerSession(authOptions);
 

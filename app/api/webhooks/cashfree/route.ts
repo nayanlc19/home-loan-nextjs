@@ -1,9 +1,21 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import crypto from "crypto";
+import { rateLimit, getClientIp, RateLimitPresets } from "@/lib/rate-limiter";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const clientIp = getClientIp(request);
+    const rateLimitResult = rateLimit(clientIp, RateLimitPresets.WEBHOOK);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429 }
+      );
+    }
+
     // Get raw body for signature verification
     const bodyText = await request.text();
     const body = JSON.parse(bodyText);

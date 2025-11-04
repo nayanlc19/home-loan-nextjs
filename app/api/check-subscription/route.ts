@@ -2,9 +2,21 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { checkUserSubscription } from "@/lib/check-subscription";
+import { rateLimit, getClientIp, RateLimitPresets } from "@/lib/rate-limiter";
 
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting
+    const clientIp = getClientIp(request);
+    const rateLimitResult = rateLimit(clientIp, RateLimitPresets.SUBSCRIPTION_CHECK);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429 }
+      );
+    }
+
     // CRITICAL SECURITY: Require authentication
     const session = await getServerSession(authOptions);
 
