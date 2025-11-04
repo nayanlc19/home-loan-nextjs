@@ -18,14 +18,14 @@ export default withAuth(
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api/auth (auth endpoints)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public (public files)
-     * - auth/signin (signin page)
+     * Only protect specific authenticated routes:
+     * - /dashboard (user dashboard)
+     * - /checkout (payment pages)
+     * - /profile (user profile)
+     * Public routes like /, /strategies, /banks, /calculators are accessible to everyone
      */
-    "/((?!api/auth|_next/static|_next/image|favicon.ico|public|auth/signin).*)",
+    "/dashboard/:path*",
+    "/checkout/:path*",
+    "/profile/:path*",
   ],
 };
