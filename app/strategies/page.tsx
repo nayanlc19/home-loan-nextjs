@@ -25,6 +25,9 @@ import {
 } from "recharts";
 import { Lock, TrendingDown, Calculator, IndianRupee } from "lucide-react";
 import { formatIndianCompactCurrency } from "@/lib/loan-utils";
+import { calculateHomeLoanTaxBenefits, type TaxRegime } from "@/lib/tax-utils";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface LoanCalculation {
   loanAmount: number;
@@ -157,8 +160,39 @@ export default function StrategiesPage() {
   const [interestRate, setInterestRate] = useState(8.5);
   const [tenure, setTenure] = useState(20);
 
+  // Tax calculation inputs
+  const [taxSlab, setTaxSlab] = useState(0.30);
+  const [taxableIncome, setTaxableIncome] = useState(1200000);
+  const [regime, setRegime] = useState<TaxRegime>("old");
+
   const calculation = calculateBiweeklyStrategy(loanAmount, interestRate, tenure);
   const savings = calculation.totalMonthlyInterest - calculation.totalBiweeklyInterest;
+
+  // Calculate year 1 principal and interest for tax benefits
+  const monthlyRate = interestRate / 100 / 12;
+  let balance = loanAmount;
+  let year1Principal = 0;
+  let year1Interest = 0;
+
+  for (let month = 1; month <= 12; month++) {
+    const interest = balance * monthlyRate;
+    const principal = calculation.monthlyEMI - interest;
+    year1Principal += principal;
+    year1Interest += interest;
+    balance -= principal;
+  }
+
+  // Calculate tax benefits
+  const taxBenefits = calculateHomeLoanTaxBenefits(
+    year1Principal,
+    year1Interest,
+    taxableIncome,
+    "self-occupied",
+    regime
+  );
+
+  // Net benefit = Interest saved + Tax benefits
+  const netBenefit = savings + taxBenefits.totalBenefit;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -244,6 +278,64 @@ export default function StrategiesPage() {
               <p className="text-sm text-gray-600">{tenure} years</p>
             </div>
           </div>
+
+          {/* Tax Calculation Inputs */}
+          <div className="mt-6 pt-6 border-t">
+            <h3 className="text-lg font-semibold mb-4 text-gray-700">Tax Benefits (Year 1)</h3>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="taxableIncome" className="text-sm font-medium">
+                  Annual Taxable Income (₹)
+                </Label>
+                <Input
+                  id="taxableIncome"
+                  type="number"
+                  value={taxableIncome}
+                  onChange={(e) => setTaxableIncome(Number(e.target.value))}
+                  className="h-10"
+                />
+                <p className="text-xs text-gray-500">
+                  ₹{taxableIncome.toLocaleString("en-IN")}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">Tax Regime</Label>
+                <RadioGroup value={regime} onValueChange={(value) => setRegime(value as TaxRegime)}>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="old" id="regime-old" />
+                      <Label htmlFor="regime-old" className="font-normal cursor-pointer">Old Regime</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="new" id="regime-new" />
+                      <Label htmlFor="regime-new" className="font-normal cursor-pointer">New Regime</Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+                <p className="text-xs text-gray-500">
+                  {regime === "old" ? "With deductions" : "No deductions"}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="taxSlab" className="text-sm font-medium">
+                  Your Tax Slab
+                </Label>
+                <Select value={taxSlab.toString()} onValueChange={(value) => setTaxSlab(Number(value))}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">0% (No tax)</SelectItem>
+                    <SelectItem value="0.05">5% (₹3-6L income)</SelectItem>
+                    <SelectItem value="0.20">20% (₹6-12L income)</SelectItem>
+                    <SelectItem value="0.30">30% (Above ₹12L)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
         </Card>
 
         {/* Results Summary */}
@@ -263,10 +355,11 @@ export default function StrategiesPage() {
           </Card>
 
           <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100">
-            <h3 className="text-sm font-semibold text-gray-600 mb-2">Total Savings</h3>
+            <h3 className="text-sm font-semibold text-gray-600 mb-2">Interest Saved</h3>
             <p className="text-3xl font-bold text-green-600">
               ₹{Math.round(savings).toLocaleString("en-IN")}
             </p>
+            <p className="text-xs text-gray-600 mt-1">Over loan lifetime</p>
           </Card>
 
           <Card className="p-6 bg-gradient-to-br from-orange-50 to-orange-100">
@@ -274,6 +367,37 @@ export default function StrategiesPage() {
             <p className="text-3xl font-bold text-orange-600">
               {Math.round(calculation.monthsReduction)} months
             </p>
+          </Card>
+        </div>
+
+        {/* Tax Benefits Summary */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <Card className="p-6 bg-gradient-to-br from-amber-50 to-amber-100">
+            <h3 className="text-sm font-semibold text-gray-600 mb-2">Tax Benefits (Year 1)</h3>
+            <p className="text-3xl font-bold text-amber-600">
+              ₹{Math.round(taxBenefits.totalBenefit).toLocaleString("en-IN")}
+            </p>
+            <div className="text-xs text-gray-600 mt-2 space-y-1">
+              <p>80C: ₹{Math.round(taxBenefits.section80C).toLocaleString("en-IN")}</p>
+              <p>24B: ₹{Math.round(taxBenefits.section24B).toLocaleString("en-IN")}</p>
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 border-2 border-emerald-300">
+            <h3 className="text-sm font-semibold text-gray-600 mb-2">NET Benefit (Year 1)</h3>
+            <p className="text-3xl font-bold text-emerald-600">
+              ₹{Math.round(netBenefit).toLocaleString("en-IN")}
+            </p>
+            <p className="text-xs text-gray-600 mt-1">Interest saved + Tax benefits</p>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-cyan-50 to-cyan-100">
+            <h3 className="text-sm font-semibold text-gray-600 mb-2">Year 1 Breakdown</h3>
+            <div className="text-sm space-y-1 mt-2">
+              <p className="text-gray-700">Principal: ₹{Math.round(year1Principal).toLocaleString("en-IN")}</p>
+              <p className="text-gray-700">Interest: ₹{Math.round(year1Interest).toLocaleString("en-IN")}</p>
+              <p className="text-xs text-gray-500 mt-1">{regime === "old" ? "Old Regime" : "New Regime"}</p>
+            </div>
           </Card>
         </div>
 
