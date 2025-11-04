@@ -133,7 +133,7 @@ export default function TopUpStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #9: Top-Up Loan
+              Strategy #2: Top-Up Loan Consolidation
             </h1>
             <p className="text-gray-600 mt-2">
               Borrow additional funds on existing home loan
@@ -143,6 +143,31 @@ export default function TopUpStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              Personal loans charge 11-18% interest, credit cards 18-42%, while home loan top-ups cost only 8.5-10%. If you have high-interest debt, consolidating it into a home loan top-up can save lakhs in interest. Banks allow top-up loans of up to 80% of property value minus existing loan balance.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>List all high-interest debts: personal loans, car loans, credit cards</li>
+                <li>Get your property valued (banks typically accept Circle Rate value)</li>
+                <li>Calculate available top-up: (80% of property value) - (outstanding home loan)</li>
+                <li>Apply for top-up with your home loan bank (faster approval, existing property)</li>
+                <li>Use top-up amount to close high-interest loans immediately</li>
+                <li>Set up EMI auto-debit for the combined loan (original + top-up)</li>
+                <li>DON'T accumulate new high-interest debt - you've gotten a second chance!</li>
+                <li>Consider prepaying top-up first as it typically has higher rate than original loan</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

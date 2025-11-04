@@ -120,7 +120,7 @@ export default function BalanceTransferStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #8: Balance Transfer
+              Strategy #7: Balance Transfer
             </h1>
             <p className="text-gray-600 mt-2">
               Refinance to lower interest rate from another bank
@@ -130,6 +130,31 @@ export default function BalanceTransferStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              If interest rates have dropped since you took your loan, or if you have excellent credit now, you can transfer your loan to a bank offering lower rates. A 0.5% rate reduction on ₹50L over 15 years = ₹4L savings! But balance transfer costs ₹15-50k in fees. The calculator shows if it's worth it by finding your breakeven point.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Get your current CIBIL score (should be 750+ for best rates)</li>
+                <li>Get loan offers from 3-4 banks (compare rates, check hidden charges)</li>
+                <li>Negotiate with current bank FIRST - they might match to retain you</li>
+                <li>Calculate breakeven using calculator above (processing fee ÷ monthly savings)</li>
+                <li>If breakeven &lt; 24 months, proceed. If &gt; 36 months, not worth it.</li>
+                <li>Submit application with new bank (they handle transfer paperwork)</li>
+                <li>New bank pays off old bank, property papers transferred</li>
+                <li>Start EMI with new bank from next month</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

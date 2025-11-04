@@ -123,7 +123,7 @@ export default function SIPVsPrepayStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #4: SIP vs Prepayment
+              Strategy #5: SIP vs Prepayment
             </h1>
             <p className="text-gray-600 mt-2">
               Compare: Prepay loan vs Invest in market through SIP
@@ -133,6 +133,30 @@ export default function SIPVsPrepayStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              The math is simple: if equity SIP returns (12-15%) exceed your home loan rate after tax (6-7%), investing wins. But life isn't just math - it's also about sleep at night. Loan prepayment gives GUARANTEED returns equal to your interest rate, zero risk. SIP can crash 40% in bear markets. The "right" answer depends on your risk appetite, age, and financial goals.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Calculate your effective loan rate after 80C and 24(b) tax benefits (typically 6-7%)</li>
+                <li>Set realistic SIP expectations: 12% (conservative), 15% (aggressive), 18% (very aggressive)</li>
+                <li>Age rule: If you're under 40, favor SIP. Over 50, favor prepayment.</li>
+                <li>Risk rule: Can you handle seeing ₹10L become ₹6L in a crash? If no → prepay</li>
+                <li>Hybrid approach: Split 50-50 between SIP and prepayment for balanced growth</li>
+                <li>Review annually: If SIP outperforms for 3 years, increase SIP%. Vice versa.</li>
+                <li>Set up auto-debit for discipline - whether SIP or prepayment</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

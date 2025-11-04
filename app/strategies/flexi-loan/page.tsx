@@ -156,7 +156,7 @@ export default function FlexiLoanStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #10: Flexi-Loan
+              Strategy #8: Flexi-Loan
             </h1>
             <p className="text-gray-600 mt-2">
               Split loan: Part EMI, Part savings to offset loan
@@ -166,6 +166,31 @@ export default function FlexiLoanStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              Flexi-loans combine the savings of prepayment with the flexibility of withdrawal. When you prepay ₹5L, it reduces your principal immediately. But unlike regular loans, you can RE-BORROW that ₹5L anytime without fresh approval! It's perfect for people who want to prepay but fear emergency cash needs. Interest savings when parked + emergency access when needed.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Check if your bank offers flexi-loans (SBI MaxGain, HDFC FloatingRate, ICICI FlexiPay)</li>
+                <li>If taking new loan, opt for flexi variant (₹2-5k extra processing fee)</li>
+                <li>If existing loan, ask to convert (may require top-up or refinance)</li>
+                <li>Link savings account to flexi-loan account for easy transfers</li>
+                <li>Park bonuses, savings, windfall into flexi-loan account (reduces interest)</li>
+                <li>Withdraw anytime via cheque/ATM/netbanking (interest restarts on withdrawn amount)</li>
+                <li>Ideal for: Business owners, freelancers, people with irregular income</li>
+                <li>NOT ideal for: People who lack discipline (easy withdrawal = overspending risk)</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

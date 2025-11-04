@@ -86,7 +86,7 @@ export default function LumpSumStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #3: Lump Sum Accelerator
+              Strategy #4: Lump Sum Accelerator
             </h1>
             <p className="text-gray-600 mt-2">
               Compare timing impact of bonus/windfall prepayment
@@ -96,6 +96,31 @@ export default function LumpSumStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              Home loans follow reducing balance method - interest is calculated on outstanding principal. Every rupee you prepay reduces the principal permanently, saving interest on that amount for ALL remaining years. Prepaying early in the loan tenure has exponential impact because you save interest for more years. A ₹5L prepayment in Year 2 saves more than ₹10L prepayment in Year 15!
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Identify lump sum sources: bonus, inheritance, maturity proceeds, gift, property sale</li>
+                <li>Keep 6-month emergency fund untouched (medical, job loss buffer)</li>
+                <li>Check prepayment charges in loan agreement (most banks: 0-2%, waived after 1-2 years)</li>
+                <li>Time prepayment in early months of financial year (to reduce Year 1 interest)</li>
+                <li>Submit prepayment form at bank 7-15 days in advance</li>
+                <li>Choose "Reduce Tenure" option (saves more interest than reducing EMI)</li>
+                <li>Get updated loan statement showing new tenure/EMI within 15 days</li>
+                <li>Verify reduced tenure and new amortization schedule</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

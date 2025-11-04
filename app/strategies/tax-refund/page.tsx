@@ -104,7 +104,7 @@ export default function TaxRefundStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #2: Tax Refund Amplification
+              Strategy #10: Tax Refund Amplification
             </h1>
             <p className="text-gray-600 mt-2">
               Use annual tax refunds for strategic prepayment
@@ -114,6 +114,30 @@ export default function TaxRefundStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              Home loans give you tax deductions under Section 80C (₹1.5L on principal) and Section 24(b) (₹2L on interest). For someone in 30% tax bracket, that's ₹50k-80k annual refund! Instead of splurging that refund, prepay your loan with it. It creates a virtuous cycle: loan reduces → next year's interest reduces → more principal gets tax benefit → bigger refund → faster prepayment!
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>File ITR every year before July 31st (declare home loan interest under 24(b))</li>
+                <li>Claim principal repayment under 80C (max ₹1.5L including PPF, ELSS, etc)</li>
+                <li>Track your refund status on income tax portal (processed in 15-90 days)</li>
+                <li>When refund hits bank account, transfer IMMEDIATELY to loan prepayment</li>
+                <li>Don't let refund "sit" in savings - it loses purchasing power to inflation</li>
+                <li>Set annual reminder: File ITR in April → Get refund by Aug → Prepay in Sept</li>
+                <li>For ₹50k annual prepayment over 20 years = ₹6-10L interest saved!</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Input Card */}
         <Card>

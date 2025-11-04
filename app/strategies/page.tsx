@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -216,7 +216,7 @@ export default function StrategiesPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4">
-            Strategy #1:{" "}
+            Strategy #9:{" "}
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Bi-Weekly Payment Hack
             </span>
@@ -229,6 +229,31 @@ export default function StrategiesPage() {
             FREE Strategy - Try Now!
           </Badge>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              Instead of paying ₹50,000 EMI monthly (12 payments/year = ₹6L), you pay ₹25,000 every 2 weeks (26 payments/year = ₹6.5L). That extra ₹50k goes directly to principal, not interest! It's painless because you're paid bi-weekly anyway. Over 20 years, this "trick" can save 3-5 years and ₹8-12 lakhs in interest.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Check if your bank accepts bi-weekly EMI (most do via standing instruction)</li>
+                <li>Calculate bi-weekly amount: Monthly EMI ÷ 2 (₹50,000 → ₹25,000)</li>
+                <li>Set up auto-debit on 1st and 15th of every month (or your pay dates)</li>
+                <li>CRITICAL: Ensure it's credited as EMI payment, not random deposit</li>
+                <li>Some banks call it "fortnightly EMI" - same concept</li>
+                <li>If bank doesn't support auto bi-weekly, manually prepay ₹25k monthly</li>
+                <li>Track annual prepayment: You're making 13 months of EMI in 12 months!</li>
+                <li>Review loan statement quarterly to verify principal reduction</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Calculator Inputs */}
         <Card className="p-8 mb-8 shadow-xl">

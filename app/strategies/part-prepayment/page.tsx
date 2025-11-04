@@ -139,7 +139,7 @@ export default function PartPrepaymentStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #7: Part Prepayment
+              Strategy #6: Part Prepayment
             </h1>
             <p className="text-gray-600 mt-2">
               Choose: Reduce EMI vs Reduce Tenure
@@ -149,6 +149,31 @@ export default function PartPrepaymentStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              Banks give you two choices when prepaying: reduce EMI or reduce tenure. Reducing EMI gives immediate cash flow relief but you pay more total interest. Reducing tenure keeps EMI same but you become debt-free years earlier and save lakhs more in interest. ALWAYS choose "Reduce Tenure" unless you desperately need cash flow relief.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Decide prepayment amount (₹50k, ₹1L, ₹2L - whatever you can afford)</li>
+                <li>Download prepayment form from bank website or collect from branch</li>
+                <li>Fill form with: loan account number, prepayment amount, option (REDUCE TENURE)</li>
+                <li>Submit 7-15 days before prepayment (some banks require advance notice)</li>
+                <li>Transfer prepayment amount to loan account via NEFT/cheque</li>
+                <li>Banks deduct prepayment from principal on the date money reaches account</li>
+                <li>Get revised amortization schedule within 15 days showing new tenure</li>
+                <li>Verify: outstanding principal reduced, tenure shortened, EMI unchanged</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

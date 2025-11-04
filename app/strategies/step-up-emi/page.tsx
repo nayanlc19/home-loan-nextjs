@@ -102,7 +102,7 @@ export default function StepUpEMIStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #6: Step-Up EMI
+              Strategy #11: Step-Up EMI
             </h1>
             <p className="text-gray-600 mt-2">
               Start low, increase EMI with salary increments
@@ -112,6 +112,31 @@ export default function StepUpEMIStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              Your salary increases 5-15% every year, but your EMI stays fixed for 20 years? That's inefficient! Step-up EMI means you increase your EMI by 5-10% annually. In Year 1, pay ₹40k. Year 2: ₹44k. Year 3: ₹48k. The extra goes to principal. Result: 20-year loan finishes in 12-14 years, saving ₹12-18 lakhs! And it's painless because your income grew too.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Calculate Year 1 EMI you can comfortably afford (30-40% of take-home)</li>
+                <li>Decide annual increase % (5% = conservative, 10% = aggressive)</li>
+                <li>Most banks DON'T offer automatic step-up, so do it manually</li>
+                <li>Set calendar reminder every January: "Increase EMI"</li>
+                <li>Submit prepayment form OR increase standing instruction amount</li>
+                <li>Example: ₹40k → ₹44k (Year 2) → ₹48k (Year 3) → ₹53k (Year 4)</li>
+                <li>Link increases to appraisal/bonus cycles for smooth cash flow</li>
+                <li>Review every 2 years: Can you increase more? Stick with 10% or bump to 15%?</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

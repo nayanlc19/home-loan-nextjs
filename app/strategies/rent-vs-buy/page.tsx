@@ -133,7 +133,7 @@ export default function RentVsBuyStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #11: Rent vs Buy
+              Strategy #12: Rent vs Buy
             </h1>
             <p className="text-gray-600 mt-2">
               20-year financial comparison: Buying vs Renting
@@ -143,6 +143,31 @@ export default function RentVsBuyStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              This isn't about "buying is always better" or "renting is throwing money away." It's pure math. When you rent and invest the difference (home price - rent), can your investments outgrow the property appreciation? In Tier-1 cities with 2-3% rental yields, often YES. In Tier-2/3 cities with 4-5% yields and higher appreciation, often NO. The "right" answer depends on city, property type, and investment discipline.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Decide property type and location (₹50L or ₹2Cr makes a difference!)</li>
+                <li>Calculate ACTUAL costs of buying: EMI + maintenance + property tax + repairs</li>
+                <li>Calculate renting cost: Monthly rent (typically 50-60% of EMI)</li>
+                <li>Invest the difference in diversified portfolio (70% equity, 30% debt for 20 years)</li>
+                <li>Factor in opportunity cost: Down payment 20% could grow at 12% if invested</li>
+                <li>Consider intangibles: Stability? Kids' school? Landlord hassles? Emotional value?</li>
+                <li>Use calculator above to model YOUR scenario with YOUR numbers</li>
+                <li>Review after 5 years: Renting can be bridge to better property later</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

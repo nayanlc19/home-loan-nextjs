@@ -157,7 +157,7 @@ export default function EarlyClosureStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #12: Early Closure vs Investment
+              Strategy #3: Early Closure vs Investment
             </h1>
             <p className="text-gray-600 mt-2">
               Should you close loan early or invest the money?
@@ -167,6 +167,31 @@ export default function EarlyClosureStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              This isn't about "always close early" or "never close early" - it's about making the RIGHT decision for YOUR situation. If you can earn more than your loan's interest rate through investments (SIP, stocks, real estate) AND you're comfortable with risk, investing might be better. But if you value peace of mind and guaranteed returns, early closure wins.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Calculate your effective loan rate after tax benefits (use calculator above)</li>
+                <li>Estimate realistic investment returns (equity: 12-15%, debt: 6-8%, mixed: 10%)</li>
+                <li>Consider your risk appetite: Do market crashes keep you awake at night?</li>
+                <li>Check early closure charges (0-2% of outstanding, waived after 2-3 years)</li>
+                <li>Maintain 6-12 month emergency fund BEFORE closing loan</li>
+                <li>If closing: Submit application, wait 7-15 days for closure letter</li>
+                <li>Collect all original documents from bank (title deed, NOC, encumbrance certificate)</li>
+                <li>Get loan closure letter registered with sub-registrar within 30 days</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>

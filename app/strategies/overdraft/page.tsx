@@ -118,7 +118,7 @@ export default function OverdraftStrategy() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Strategy #5: Overdraft Optimization
+              Strategy #1: Overdraft Optimization
             </h1>
             <p className="text-gray-600 mt-2">
               Manage surplus funds through overdraft facility
@@ -128,6 +128,30 @@ export default function OverdraftStrategy() {
             <Button variant="outline">← All Strategies</Button>
           </Link>
         </div>
+
+        {/* Rationale & Execution */}
+        <Card className="mb-6 border-l-4 border-l-blue-600">
+          <CardHeader>
+            <CardTitle className="text-lg">📘 Why This Works</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-gray-700">
+              Home loan overdraft (OD) accounts calculate interest daily on the outstanding balance, not monthly on the full loan amount. By parking your savings in the OD account, you reduce the principal on which interest is calculated. For example, if you have ₹50L loan but ₹10L savings parked in OD, you only pay interest on ₹40L.
+            </p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2 text-blue-900">📋 How to Execute:</h4>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-700">
+                <li>Check if your bank offers home loan overdraft facility (SBI, HDFC, ICICI do)</li>
+                <li>Convert existing loan to OD or apply for new OD loan (₹5-10k conversion fee)</li>
+                <li>Get a cheque book and debit card for the OD account</li>
+                <li>Route salary directly into OD account</li>
+                <li>Keep ALL savings (emergency fund, FD maturity, bonuses) in OD account</li>
+                <li>Set up auto-pay for bills from a separate account, keeping max balance in OD</li>
+                <li>Review monthly - ensure you're maintaining healthy surplus in OD</li>
+              </ol>
+            </div>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
