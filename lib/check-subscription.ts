@@ -13,6 +13,12 @@ export async function checkUserSubscription(
       return false;
     }
 
+    // Admin users always have access
+    const adminEmails = process.env.ADMIN_EMAILS?.split(',').map(e => e.trim()) || ['nayanlc19@gmail.com'];
+    if (adminEmails.includes(userEmail)) {
+      return true;
+    }
+
     const supabase = await createClient();
 
     // Query the user_subscriptions table matching existing schema
