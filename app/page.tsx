@@ -324,10 +324,11 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t bg-white">
         <div className="container mx-auto px-4 py-8 text-center text-gray-600">
-          <p>© 2025 Home Loan Toolkit. All rights reserved.</p>
+          <p>© 2025 N Education - Home Loan Toolkit. All rights reserved.</p>
           <div className="flex justify-center gap-4 mt-4">
             <Link href="/terms" className="hover:text-blue-600">Terms</Link>
             <Link href="/privacy" className="hover:text-blue-600">Privacy</Link>
+            <Link href="/refund" className="hover:text-blue-600">Refund Policy</Link>
             <Link href="/contact" className="hover:text-blue-600">Contact</Link>
           </div>
         </div>
