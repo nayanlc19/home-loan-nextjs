@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    const orderId = searchParams.get("orderId");
+    const orderId = searchParams.get("order_id");
 
     if (!orderId) {
       return NextResponse.json({ error: "Order ID required" }, { status: 400 });
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       console.log(`Payment ${orderId} already processed - idempotent response`);
       return NextResponse.json({
         success: true,
-        status: "paid",
+        payment_status: "SUCCESS",
         payment: {
           orderId: existingPayment.order_id,
           amount: existingPayment.amount,
@@ -169,7 +169,7 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        status: "paid",
+        payment_status: "SUCCESS",
         payment: {
           orderId: orderId,
           amount: actualAmount,
