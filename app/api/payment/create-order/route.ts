@@ -54,12 +54,17 @@ export async function POST(req: NextRequest) {
     const orderId = `order_${Date.now()}_${randomSuffix}`;
 
     // Prepare order data
+    // Sanitize customer_id: Cashfree requires alphanumeric + underscore/hyphen only
+    const sanitizedCustomerId = session.user.email
+      ? session.user.email.replace(/[^a-zA-Z0-9]/g, '_')
+      : `user_${Date.now()}`;
+
     const orderData = {
       order_id: orderId,
       order_amount: parseFloat(paymentAmount),
       order_currency: 'INR',
       customer_details: {
-        customer_id: session.user.email || `user_${Date.now()}`,
+        customer_id: sanitizedCustomerId,
         customer_email: session.user.email || '',
         customer_name: session.user.name || 'User',
         customer_phone: '9999999999', // You may want to collect this from user profile
