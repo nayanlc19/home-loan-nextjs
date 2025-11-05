@@ -100,9 +100,10 @@ export default function CheckoutPage() {
 
   const features = [
     'All 11 strategies',
-    '1 year access',
+    '1 year access (valid from payment date)',
     'Tax calculator',
     'Bank comparison',
+    'Access persists across sign-ins',
   ];
 
   return (
