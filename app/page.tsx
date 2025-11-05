@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +14,7 @@ import {
   BarChart3,
   IndianRupee,
   Users,
+  LogOut,
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from "recharts";
 
@@ -62,9 +63,19 @@ export default function Home() {
               <Button variant="ghost">Hidden Costs</Button>
             </Link>
             {session?.user ? (
-              <Badge variant="secondary" className="px-4 py-2">
-                {session.user.name || session.user.email}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="px-4 py-2">
+                  {session.user.name || session.user.email}
+                </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </Button>
+              </div>
             ) : (
               <Link href="/auth/signin">
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
