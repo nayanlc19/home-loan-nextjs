@@ -61,10 +61,16 @@ export default function Home() {
             <Link href="/guides/hidden-costs">
               <Button variant="ghost">Hidden Costs</Button>
             </Link>
-            {session?.user && (
+            {session?.user ? (
               <Badge variant="secondary" className="px-4 py-2">
                 {session.user.name || session.user.email}
               </Badge>
+            ) : (
+              <Link href="/auth/signin">
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+                  Sign In
+                </Button>
+              </Link>
             )}
           </div>
         </div>
