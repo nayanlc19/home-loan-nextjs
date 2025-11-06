@@ -35,6 +35,18 @@ const strategyComparison = [
   { month: 36, baseline: 1620000, biweekly: 1900000 },
 ];
 
+// Format numbers in Indian style (K, L, Cr)
+const formatIndianCurrency = (value: number): string => {
+  if (value >= 10000000) {
+    return `₹${(value / 10000000).toFixed(1)}Cr`;
+  } else if (value >= 100000) {
+    return `₹${(value / 100000).toFixed(1)}L`;
+  } else if (value >= 1000) {
+    return `₹${(value / 1000).toFixed(0)}K`;
+  }
+  return `₹${value}`;
+};
+
 export default function Home() {
   const { data: session } = useSession();
 
@@ -152,7 +164,10 @@ export default function Home() {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" label={{ value: "Years", position: "insideBottom", offset: -5 }} />
-                <YAxis label={{ value: "Savings (₹)", angle: -90, position: "insideLeft" }} />
+                <YAxis
+                  label={{ value: "Savings (₹)", angle: -90, position: "insideLeft" }}
+                  tickFormatter={formatIndianCurrency}
+                />
                 <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}`} />
                 <Area
                   type="monotone"
@@ -282,7 +297,10 @@ export default function Home() {
             <LineChart data={strategyComparison}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" label={{ value: "Months", position: "insideBottom", offset: -5 }} />
-              <YAxis label={{ value: "Amount Paid (₹)", angle: -90, position: "insideLeft" }} />
+              <YAxis
+                label={{ value: "Amount Paid (₹)", angle: -90, position: "insideLeft" }}
+                tickFormatter={formatIndianCurrency}
+              />
               <Tooltip formatter={(value: number) => `₹${value.toLocaleString()}`} />
               <Line
                 type="monotone"
