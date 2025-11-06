@@ -19,8 +19,16 @@ export default function ContactUs() {
                 <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
                   <Building2 className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
                   <div>
-                    <h3 className="font-semibold mb-1">Business Name</h3>
+                    <h3 className="font-semibold mb-1">Legal Entity Name</h3>
                     <p className="text-muted-foreground">N Education</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
+                  <Building2 className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Operating Address</h3>
+                    <p className="text-muted-foreground">Hyderabad, India</p>
                   </div>
                 </div>
 
@@ -38,6 +46,16 @@ export default function ContactUs() {
                     <h3 className="font-semibold mb-1">Email</h3>
                     <a href="mailto:dmcpexam2020@gmail.com" className="text-blue-600 hover:underline">
                       dmcpexam2020@gmail.com
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-4 bg-muted/50 rounded-lg">
+                  <Mail className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-semibold mb-1">Phone Number</h3>
+                    <a href="tel:+917021761291" className="text-blue-600 hover:underline">
+                      +91 7021761291
                     </a>
                   </div>
                 </div>

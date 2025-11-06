@@ -15,9 +15,11 @@ export default function PrivacyPolicy() {
             <section>
               <h2 className="text-xl font-semibold mb-3">Business Information</h2>
               <div className="space-y-2 text-muted-foreground">
-                <p><strong>Business Name:</strong> N Education</p>
+                <p><strong>Legal Entity Name:</strong> N Education</p>
+                <p><strong>Operating Address:</strong> Hyderabad, India</p>
                 <p><strong>Website:</strong> home-loan-nextjs.onrender.com</p>
                 <p><strong>Contact Email:</strong> dmcpexam2020@gmail.com</p>
+                <p><strong>Phone Number:</strong> +91 7021761291</p>
               </div>
             </section>
 
@@ -193,8 +195,10 @@ export default function PrivacyPolicy() {
                 If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us:
               </p>
               <div className="mt-3 space-y-1">
-                <p className="font-semibold">Email: dmcpexam2020@gmail.com</p>
-                <p className="text-muted-foreground">Business Name: N Education</p>
+                <p><strong>Legal Entity Name:</strong> N Education</p>
+                <p><strong>Email:</strong> dmcpexam2020@gmail.com</p>
+                <p><strong>Phone:</strong> +91 7021761291</p>
+                <p><strong>Address:</strong> Hyderabad, India</p>
               </div>
             </section>
 
